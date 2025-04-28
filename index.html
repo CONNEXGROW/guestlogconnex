@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ConnexGrow Feed</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --secondary: #10b981;
+      --dark: #111827;
+      --dark-lighter: #1f2937;
+      --gray: #6b7280;
+      --light-gray: #e5e7eb;
+      --white: #ffffff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--dark);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 0;
+      border-bottom: 1px solid var(--dark-lighter);
+      margin-bottom: 2rem;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: -0.5px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+    }
+
+    .login-container {
+      background-color: var(--dark-lighter);
+      border-radius: 12px;
+      padding: 2rem;
+      max-width: 500px;
+      margin: 4rem auto;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .login-container h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+    }
+
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .form-group label {
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .form-group input {
+      padding: 0.75rem;
+      border-radius: 6px;
+      border: 1px solid var(--gray);
+      background-color: var(--dark);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      transition: border-color 0.2s;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: var(--white);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .btn-guest {
+      background-color: transparent;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      margin-top: 0.75rem;
+    }
+
+    .btn-guest:hover {
+      background-color: rgba(99, 102, 241, 0.1);
+    }
+
+    .btn-logout {
+      background-color: var(--dark-lighter);
+      color: var(--white);
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+    }
+
+    .btn-logout:hover {
+      background-color: var(--gray);
+    }
+
+    .or-divider {
+      display: flex;
+      align-items: center;
+      margin: 1rem 0;
+    }
+
+    .or-divider::before, .or-divider::after {
+      content: "";
+      flex: 1;
+      border-bottom: 1px solid var(--gray);
+    }
+
+    .or-divider span {
+      padding: 0 1rem;
+      color: var(--gray);
+      font-size: 0.875rem;
+    }
+
+    .feed-container {
+      display: none;
+    }
+
+    .feed-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .post-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+      grid-auto-rows: min-content;
+    }
+
+    .post-card {
+      background-color: var(--dark-lighter);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .post-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .post-media-container {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+
+    .post-media {
+      max-width: 100%;
+      max-height: 400px;
+      object-fit: contain;
+      display: block;
+    }
+
+    video.post-media {
+      width: 100%;
+      background-color: #000;
+    }
+
+    .post-content {
+      padding: 1.25rem;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .post-user {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .post-user-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .post-user-placeholder {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background-color: var(--gray);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    .post-user-info h3 {
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .post-user-info p {
+      color: var(--gray);
+      font-size: 0.875rem;
+    }
+
+    .post-description {
+      margin-bottom: 1rem;
+      color: var(--light-gray);
+      font-size: 0.95rem;
+      flex-grow: 1;
+    }
+
+    .post-stats {
+      display: flex;
+      justify-content: space-between;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--gray);
+      font-size: 0.875rem;
+    }
+
+    .post-date {
+      display: block;
+      margin-top: 0.75rem;
+      color: var(--gray);
+      font-size: 0.75rem;
+    }
+
+    .loader {
+      display: none;
+      justify-content: center;
+      align-items: center;
+      height: 80px;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(99, 102, 241, 0.1);
+      border-left-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .error-message {
+      color: #ef4444;
+      font-size: 0.875rem;
+      margin-top: 0.5rem;
+      text-align: center;
+      display: none;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: var(--gray);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+
+      .post-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>ConnexGrow Feed</h1>
+      <div class="user-info" style="display: none;">
+        <div class="user-avatar">G</div>
+        <div>
+          <span id="username">Guest</span>
+          <button class="btn btn-logout" onclick="logout()">Logout</button>
+        </div>
+      </div>
+    </header>
+
+    <div id="login-container" class="login-container">
+      <h2>Welcome to ConnexGrow</h2>
+      <div class="login-form">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="Enter your email">
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Enter your password">
+        </div>
+        <button class="btn btn-primary" onclick="login()">Sign In</button>
+        <div class="error-message" id="login-error">Invalid credentials. Please try again.</div>
+
+        <div class="or-divider">
+          <span>OR</span>
+        </div>
+
+        <button class="btn btn-guest" onclick="guestLogin()">Continue as Guest</button>
+      </div>
+    </div>
+
+    <div id="feed-container" class="feed-container">
+      <div class="feed-header">
+        <h2>Latest Posts</h2>
+      </div>
+
+      <div class="loader" id="loader">
+        <div class="spinner"></div>
+      </div>
+
+      <div id="feed" class="post-grid"></div>
+    </div>
+  </div>
+
+  <script>
+    // Session management
+    let isLoggedIn = false;
+
+    // Check if user is already logged in (session storage)
+    function checkLoginStatus() {
+      const loggedInUser = sessionStorage.getItem('connexGrowUser');
+      if (loggedInUser) {
+        const user = JSON.parse(loggedInUser);
+        showLoggedInState(user.name);
+        loadFeed();
+      }
+    }
+
+    // Handle regular login
+    function login() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      // Simple validation
+      if (!email || !password) {
+        showError('Please enter both email and password');
+        return;
+      }
+
+      // In a real app, you would validate against a backend
+      // For now, we'll just simulate a login
+      simulateLogin(email);
+    }
+
+    // Guest login functionality
+    function guestLogin() {
+      simulateLogin('guest@connexgrow.com');
+    }
+
+    function simulateLogin(email) {
+      // Show loading state
+      document.getElementById('login-error').style.display = 'none';
+      const loginBtn = document.querySelector('.btn-primary');
+      const guestBtn = document.querySelector('.btn-guest');
+
+      loginBtn.disabled = true;
+      guestBtn.disabled = true;
+
+      // Simulate API call
+      setTimeout(() => {
+        const username = email.split('@')[0];
+        const userData = {
+          name: username.charAt(0).toUpperCase() + username.slice(1),
+          email: email
+        };
+
+        // Save to session storage
+        sessionStorage.setItem('connexGrowUser', JSON.stringify(userData));
+
+        // Update UI
+        showLoggedInState(userData.name);
+
+        // Load feed
+        loadFeed();
+
+        // Reset form
+        document.getElementById('email').value = '';
+        document.getElementById('password').value = '';
+        loginBtn.disabled = false;
+        guestBtn.disabled = false;
+      }, 1000);
+    }
+
+    function showError(message) {
+      const errorEl = document.getElementById('login-error');
+      errorEl.textContent = message;
+      errorEl.style.display = 'block';
+    }
+
+    function showLoggedInState(username) {
+      isLoggedIn = true;
+      document.getElementById('login-container').style.display = 'none';
+      document.getElementById('feed-container').style.display = 'block';
+      document.getElementById('username').textContent = username;
+      document.querySelector('.user-info').style.display = 'flex';
+
+      // Update the avatar with first letter
+      document.querySelector('.user-avatar').textContent = username.charAt(0);
+    }
+
+    function logout() {
+      isLoggedIn = false;
+      sessionStorage.removeItem('connexGrowUser');
+      document.getElementById('login-container').style.display = 'block';
+      document.getElementById('feed-container').style.display = 'none';
+      document.querySelector('.user-info').style.display = 'none';
+      document.getElementById('feed').innerHTML = '';
+    }
+
+    function loadFeed() {
+      if (!isLoggedIn) return;
+
+      const feedDiv = document.getElementById('feed');
+      const loader = document.getElementById('loader');
+
+      // Show loader
+      loader.style.display = 'flex';
+      feedDiv.innerHTML = '';
+
+      fetch("http://143.110.187.171:3000/post/admin-all-post-list", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          page: 1,
+          limit: 50,
+          search: ""
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log("Full Post Data:", data);
+
+        // Hide loader
+        loader.style.display = 'none';
+
+        if (data.status && data.data.length > 0) {
+          data.data.forEach(post => {
+            console.log("Post Item:", post);
+
+            const postElement = document.createElement("div");
+            postElement.className = "post-card";
+            postElement.style.border = "1px solid white";
+            postElement.style.padding = "10px";
+            postElement.style.margin = "10px 0";
+
+            let mediaHtml = "";
+
+            if (post.imageUrl) {
+              if (post.type === "video" && post.imageUrl.endsWith(".mp4")) {
+                mediaHtml = `<video controls width="300" style="margin-top: 10px;"><source src="${post.imageUrl}" type="video/mp4">Your browser does not support video.</video>`;
+              } else {
+                mediaHtml = `<img src="${post.imageUrl}" alt="Post Image" style="max-width: 100%; margin-top: 10px;" />`;
+              }
+            }
+
+            // User details
+            const username = post.user?.name || "Unknown User";
+            const userDesignation = post.user?.designation || "Member";
+
+            // User avatar
+            let userAvatarHtml;
+            if (post.user?.profilePic) {
+              userAvatarHtml = `<img src="${post.user.profilePic}" alt="${username}" class="post-user-avatar">`;
+            } else {
+              userAvatarHtml = `<div class="post-user-placeholder">${username.charAt(0)}</div>`;
+            }
+
+            // Post stats
+            const views = Array.isArray(post.views) ? post.views.length : (post.views || 0);
+            const likes = Array.isArray(post.likes) ? post.likes.length : (post.likes || 0);
+            const commentCount = post.commentCount ?? (Array.isArray(post.comments) ? post.comments.length : 0);
+
+            // Format date
+            const postDate = new Date(post.createdAt).toLocaleString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            });
+
+            postElement.innerHTML = `
+              ${mediaHtml}
+              <div class="post-content">
+                <div class="post-user">
+                  ${userAvatarHtml}
+                  <div class="post-user-info">
+                    <h3>${username}</h3>
+                    <p>${userDesignation}</p>
+                  </div>
+                </div>
+
+                <p class="post-description">${post.description || "No description available."}</p>
+
+                <div class="post-stats">
+                  <span>${views} views</span>
+                  <span>${commentCount} comments</span>
+                  <span>${likes} likes</span>
+                </div>
+
+                <small class="post-date">Posted on ${postDate}</small>
+              </div>
+            `;
+
+            feedDiv.appendChild(postElement);
+          });
+        } else {
+          feedDiv.innerHTML = "<p>No posts available.</p>";
+          console.log("No data or status is false");
+        }
+      })
+      .catch(error => {
+        console.error("Error loading feed:", error);
+        loader.style.display = 'none';
+        feedDiv.innerHTML = "<p style='color:red;'>Failed to load posts.</p>";
+      });
+    }
+
+    // Initialize the app
+    document.addEventListener('DOMContentLoaded', checkLoginStatus);
+  </script>
+</body>
+</html>
